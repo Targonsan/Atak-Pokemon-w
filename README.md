@@ -12,6 +12,6 @@ Gra podzielona jest na tury, po każdym ruchu naszej armii Pokemenów przeciwnik
 Mapa Gry będzie wyświetlać się w konsoli.
 
 Harmonogram pracy :
-na następny tydzień przewiduje dodanie wszystkich potrzebnyhc klas 
-za dwa tygodnie ostatnie szlify związanne z porjektem 
-za 3 tygodnie oddanie
+-na następny tydzień przewiduje dodanie wszystkich potrzebnyhc klas 
+-za dwa tygodnie ostatnie szlify związanne z porjektem 
+-za 3 tygodnie oddanie
