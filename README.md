@@ -14,6 +14,6 @@ Mapa Gry będzie wyświetlać się w konsoli.
 Harmonogram pracy :
 -na następny tydzień przewiduje dodanie klas takich jak Player, Pokemen,baza oraz ich Interakcja(baza będzie zmianiała kolor zależnie od poziomu ulepszenia )
 
-za 2 tygodnie zostanie dodana prosta logika gry tzn kiedy nasz przeciwnik będzie wybierał opcje mniej losowo, gdy zbliżymy się za bardzo do bazy to  bardziej będzie mu zależało na strzelaniu do nas niż rozbudowie o kolejnych poziomów murów.
+za 2 tygodnie zostanie dodana prosta logika gry tzn kiedy nasz przeciwnik będzie wybierał opcje mniej losowo,np  gdy zbliżymy się za bardzo do bazy to  bardziej będzie mu zależało na strzelaniu do nas niż rozbudowie o kolejnych poziomów murów. Zostaną dodane poziomy trudności (póki co myśle nad 2 mianowicie: łatwy oraz trudny(większa zmiana procentowa niektórych parametrów np. strzał z armaty zamiast +5% to +8)
 
--do 23.06.2017 zostanie dodana szczegółowa dokumentacja oraz mini poradnik do gry
+-do 23.06.2017 zostanie dodana szczegółowa dokumentacja oraz mini poradnik do gry, która to wejdzie w faze testową .
