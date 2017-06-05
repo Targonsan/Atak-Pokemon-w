@@ -12,8 +12,8 @@ Gra podzielona jest na tury, po każdym ruchu naszej armii Pokemenów przeciwnik
 Mapa Gry będzie wyświetlać się w konsoli.
 
 Harmonogram pracy :
--na następny tydzień przewiduje dodanie wszystkich potrzebnych klas 
+-na następny tydzień przewiduje dodanie klas takich jak Player, Pokemen,baza oraz ich Interakcja(baza będzie zmianiała kolor zależnie od poziomu ulepszenia )
 
--za dwa tygodnie ostatnie szlify związanne z porjektem 
+za 2 tygodnie zostanie dodana prosta logika gry tzn kiedy nasz przeciwnik będzie wybierał opcje mniej losowo, gdy zbliżymy się za bardzo do bazy to  bardziej będzie mu zależało na strzelaniu do nas niż rozbudowie o kolejnych poziomów murów.
 
--za 3 tygodnie oddanie
+-do 23.06.2017 zostanie dodana szczegółowa dokumentacja oraz mini poradnik do gry
