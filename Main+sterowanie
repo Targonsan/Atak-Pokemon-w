@@ -4,8 +4,11 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <windows.h>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
-
+static int n = 20;
+static int m = 40;
 struct Position
 {
 	int x;
@@ -17,7 +20,6 @@ struct Position
 class Object
 {
 	Position pozycja;
-	
 	public:
 		int getX(); // wyciaganie parametrow
 		int getY(); 
@@ -56,11 +58,37 @@ class Pokemen : public Object
 };
 
 
+class Zamek : public Object
+{
+
+	
+	public:
+		Zamek(int x, int y );
+	
+};
+
+
+
+
+
+
+
+Zamek::Zamek(int x, int y)
+{
+	setX(x);
+	setY(y);
+}
+
+
+
+
+
 Pokemen::Pokemen(int x, int y)
 {
 	setX(x);
 	setY(y);
 }
+
 
 /************************************************************/
 
@@ -101,6 +129,22 @@ void ClearScreen()
   SetConsoleCursorPosition( hStdOut, homeCoords );
 }
 
+int losowanie(int a)
+{
+	cout<<"komputer"<<endl;
+
+
+if(a == 1)
+{
+	cout<<"wysłanie zolnierza"<<endl;
+}else if(a== 2)
+{
+	cout<<"rozbudowa zamku"<<endl;
+}else if(a== 3)
+{
+	cout<<"ulepszenie dziala"<<endl;
+}
+}
 /************************************************************/
 
 int main()
@@ -108,8 +152,7 @@ int main()
 	HANDLE hOut;
 	hOut = GetStdHandle( STD_OUTPUT_HANDLE );
 	int start = 1;
-	static int n = 20;
-	static int m = 40;
+	
 	int macierz[n][m];
 	unsigned char znak;
 	int x = 3;
@@ -132,10 +175,10 @@ int main()
 	{
 		for (int j = 0; j<m; j++)
 		{
-				macierz[i][0] = 1;
-				macierz[i][m-1] = 1;
-				macierz[0][j] = 1;
-				macierz[n-1][j] = 1;
+				macierz[i][1] = 7;
+				macierz[i][m-1] = 7;
+				macierz[0][j] = 7;
+				macierz[n-1][j] = 7;
 		}
 	} 
 	
@@ -156,18 +199,27 @@ int main()
 	macierz[(n/2)-2][(m-1)/2] = 4;
 	macierz[(n/2)-2][m/2] = 4;
 	macierz[(n/2)-2][(m/2)-2] = 4;
-		
+		 int licznik=0;
+		  
 	while(start)
 	{
+		srand( time( NULL ) );
 		cout << "<<<<<<<<<< ATAK POKEMENOW >>>>>>>>>>>>" << endl;
 		cout << "Wcisnij ESC aby wyjsc!";
 		cout << endl;
-		
+	  //liczba wykonanych ruchów
+	    licznik++;
+	    cout<<"liczba ruchow"<<licznik/2<<endl;
+	    //losowanie co wybierze komouter
+	    int r ;
+	     r=(( rand() % 3 ) + 0 );
+	    losowanie(r);
+	    
 		for(int i = 0; i<n; i++)
 		{
 			for (int j = 0; j<m; j++)
 			{
-					if(macierz[i][j] == 1)
+					if(macierz[i][j] == 7)
 					{
 						SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_INTENSITY );
 						cout << "#";
@@ -206,6 +258,7 @@ int main()
 					// Fortyfikacje	lvl 3				
 					else if (macierz[i][j] == 6)
 					{
+						SetConsoleTextAttribute( hOut, FOREGROUND_RED | FOREGROUND_INTENSITY );
 						cout << "X";
 						SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
 					}
@@ -216,40 +269,45 @@ int main()
 					}
 			}
 			cout << endl;
-		} //sterowanie za pomocą strzałek
+		} //sterowanie za pomocą strzałek+ dzwiek
 		cout << "<<<<<<<<<<<<<<<<<<<Pokemeny>>>>>>>>>>>>>>>>>";		
 	    znak = getch();
+	 
         switch( znak )
         {
             case 72: //strzałka w górę
-            	if(macierz[x-1][y] != 1)
+            	if(macierz[x-1][y] <1 )
 				{
 	       			macierz[x][y] = 0;
-	            	macierz[x=x-1][y] = 2;					
+	            	macierz[x=x-1][y] = 2;
+					Beep(400,100);					
 				}
 
                 break;
             case 80: //strzałka w dół
-            	if(macierz[x+1][y] != 1)
+            	if(macierz[x+1][y] < 1)
 				{
 	            	macierz[x][y] = 0;
-	             	macierz[x=x+1][y] = 2;   					
+	             	macierz[x=x+1][y] = 2;
+					 Beep(500,100);   					
 				}
         	
                 break;
             case 75: //strzałka w lewo
-            	if(macierz[x][y-1] != 1)
+            	if(macierz[x][y-1] < 1)
 				{
 	            	macierz[x][y] = 0;
-	        		macierz[x][y=y-1] = 2;					
+	        		macierz[x][y=y-1] = 2;
+					Beep(440,100);					
 				}
 
                 break;
             case 77: //strzałka w prawo
-            	if(macierz[x][y+1] != 1)
+            	if(macierz[x][y+1] < 1)
 				{
 	            	macierz[x][y] = 0;
-	         		macierz[x][y=y+1] = 2;  					
+	         		macierz[x][y=y+1] = 2;
+					 Beep(600,100);  					
 				}
          	
                 break;
@@ -258,6 +316,7 @@ int main()
 				start = 0;
 	            break;
         }	
+      
 		
 	ClearScreen();
 	}
