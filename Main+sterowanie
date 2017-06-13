@@ -9,90 +9,75 @@
 using namespace std;
 static int n = 20;
 static int m = 40;
+int poziomUlepszen=0;
+ 
 struct Position
 {
-	int x;
-	int y;
+    int x;
+    int y;
 };
-
+ 
 /************************************************************/
-
+ 
 class Object
 {
-	Position pozycja;
-	public:
-		int getX(); // wyciaganie parametrow
-		int getY(); 
-		void setX(int x); // ustawianie parametrow
-		void setY(int y);
+    Position pozycja;
+    public:
+        int getX(); // wyciaganie parametrow
+        int getY();
+        void setX(int x); // ustawianie parametrow
+        void setY(int y);
 };
-
+ 
 int Object::getX()
 {
-	return pozycja.x;
+    return pozycja.x;
 }
-
+ 
 int Object::getY()
 {
-	return pozycja.y;
+    return pozycja.y;
 }
-
+ 
 void Object::setX(int x)
 {
-	pozycja.x = x;
+    pozycja.x = x;
 }
-
+ 
 void Object::setY(int y)
 {
-	pozycja.y = y;
+    pozycja.y = y;
 }
 /************************************************************/
-
+ 
 class Pokemen : public Object
-{
-
-	
-	public:
-		Pokemen(int x, int y );
-	
+{  
+    public:
+        Pokemen(int x, int y );
 };
-
-
+ 
 class Zamek : public Object
 {
-
-	
-	public:
-		Zamek(int x, int y );
-	
+    public:
+        Zamek(int x, int y );  
 };
-
-
-
-
-
-
-
+ 
 Zamek::Zamek(int x, int y)
 {
-	setX(x);
-	setY(y);
+    setX(x);
+    setY(y);
 }
-
-
-
-
-
+ 
 Pokemen::Pokemen(int x, int y)
 {
-	setX(x);
-	setY(y);
+    setX(x);
+    setY(y);
 }
-
-
+ 
+ 
 /************************************************************/
-
-// Metoda do czyszczenia ekranu, 
+ 
+// Metoda do czyszczenia ekranu,
 void ClearScreen()
 {
   HANDLE                     hStdOut;
@@ -100,14 +85,14 @@ void ClearScreen()
   DWORD                      count;
   DWORD                      cellCount;
   COORD                      homeCoords = { 0, 0 };
-
+ 
   hStdOut = GetStdHandle( STD_OUTPUT_HANDLE );
   if (hStdOut == INVALID_HANDLE_VALUE) return;
-
+ 
   /* Get the number of cells in the current buffer */
   if (!GetConsoleScreenBufferInfo( hStdOut, &csbi )) return;
   cellCount = csbi.dwSize.X *csbi.dwSize.Y;
-
+ 
   /* Fill the entire buffer with spaces */
   if (!FillConsoleOutputCharacter(
     hStdOut,
@@ -116,7 +101,7 @@ void ClearScreen()
     homeCoords,
     &count
     )) return;
-
+ 
   /* Fill the entire buffer with the current colors and attributes */
   if (!FillConsoleOutputAttribute(
     hStdOut,
@@ -128,200 +113,229 @@ void ClearScreen()
   /* Move the cursor home */
   SetConsoleCursorPosition( hStdOut, homeCoords );
 }
-
-int losowanie(int a)
+ 
+void losowanie(int a)
 {
-	cout<<"komputer"<<endl;
-
-
-if(a == 1)
-{
-	cout<<"wysłanie zolnierza"<<endl;
-}else if(a== 2)
-{
-	cout<<"rozbudowa zamku"<<endl;
-}else if(a== 3)
-{
-	cout<<"ulepszenie dziala"<<endl;
-}
+    cout<<"komputer: "<<endl;
+ 
+    if(a == 0)
+    {
+        cout<<"wysłanie zolnierza"<<endl;
+    }
+    else if(a== 1)
+    {
+        cout<<"rozbudowa zamku"<<endl;
+        poziomUlepszen++;
+    }
+    else if(a== 2)
+    {
+        cout<<"ulepszenie dziala"<<endl;
+    }
 }
 /************************************************************/
-
+ 
+ 
 int main()
 {
-	HANDLE hOut;
-	hOut = GetStdHandle( STD_OUTPUT_HANDLE );
-	int start = 1;
-	
-	int macierz[n][m];
-	unsigned char znak;
-	int x = 3;
-	int y = 3;
-	
-	//Position Punkt{x,y};
-	//Player gracz(x,y,t);
-
-	// zerowanie macierzy
-	for(int i = 0; i<n; i++)
-	{
-		for (int j = 0; j<m; j++)
-		{
-				macierz[i][j] = 0;
-		}
-	} 
-	
-	// Budowanie scian
-	for(int i = 0; i<n; i++)
-	{
-		for (int j = 0; j<m; j++)
-		{
-				macierz[i][1] = 7;
-				macierz[i][m-1] = 7;
-				macierz[0][j] = 7;
-				macierz[n-1][j] = 7;
-		}
-	} 
-	
-	// Pozycja zerowa gracza, zastanawiam się czy nie zrobić jej losowej
-	macierz[x][y] = 2;
-	
-	// Pozycja dla bazy 
-	macierz[(n-1)/2][(m-1)/2] = 3;
-	
-	// Wspolrzedne dla fortyfikacji
-	macierz[n/2][(m-1)/2] = 4;
-	macierz[n/2][m/2] = 4;
-	macierz[n/2][(m/2)-2] = 4;
-	
-	macierz[(n/2)-1][(m/2)-2] = 4;
-	macierz[(n/2)-1][m/2] = 4;
-	
-	macierz[(n/2)-2][(m-1)/2] = 4;
-	macierz[(n/2)-2][m/2] = 4;
-	macierz[(n/2)-2][(m/2)-2] = 4;
-		 int licznik=0;
-		  
-	while(start)
-	{
-		srand( time( NULL ) );
-		cout << "<<<<<<<<<< ATAK POKEMENOW >>>>>>>>>>>>" << endl;
-		cout << "Wcisnij ESC aby wyjsc!";
-		cout << endl;
-	  //liczba wykonanych ruchów
-	    licznik++;
-	    cout<<"liczba ruchow"<<licznik/2<<endl;
-	    //losowanie co wybierze komouter
-	    int r ;
-	     r=(( rand() % 3 ) + 0 );
-	    losowanie(r);
-	    
-		for(int i = 0; i<n; i++)
-		{
-			for (int j = 0; j<m; j++)
-			{
-					if(macierz[i][j] == 7)
-					{
-						SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_INTENSITY );
-						cout << "#";
-						SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
-					}
-					
-					else if(macierz[i][j] == 2)
-					{
-						SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_RED | FOREGROUND_INTENSITY );
-						cout << "G";
-						SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
-					}
-				
-					else if (macierz[i][j] == 3)
-					{
-						SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY );
-						cout << "Q";// Tu bedzie dzialo
-						SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
-					}
-
-					// Fortyfikacje					
-					else if (macierz[i][j] == 4)
-					{
-						SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_INTENSITY );
-						cout << "X";
-						SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
-					}
-					
-					// Fortyfikacje lvl 2			
-					else if (macierz[i][j] == 5)
-					{
-						cout << "X";
-						SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
-					}
-					
-					// Fortyfikacje	lvl 3				
-					else if (macierz[i][j] == 6)
-					{
-						SetConsoleTextAttribute( hOut, FOREGROUND_RED | FOREGROUND_INTENSITY );
-						cout << "X";
-						SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
-					}
-					
-					else
-					{
-						cout << " ";
-					}
-			}
-			cout << endl;
-		} //sterowanie za pomocą strzałek+ dzwiek
-		cout << "<<<<<<<<<<<<<<<<<<<Pokemeny>>>>>>>>>>>>>>>>>";		
-	    znak = getch();
-	 
+    srand( time( NULL ) );
+    HANDLE hOut;
+    hOut = GetStdHandle( STD_OUTPUT_HANDLE );
+    int start = 1;
+   
+    int macierz[n][m];
+    unsigned char znak;
+    int x = 3;
+    int y = 3;
+   
+    //Position Punkt{x,y};
+    Pokemen gracz(x,y);
+    //cout << gracz.getX() << endl;
+ 
+    // zerowanie macierzy
+    for(int i = 0; i<n; i++)
+    {
+        for (int j = 0; j<m; j++)
+        {
+                macierz[i][j] = 0;
+        }
+    }
+   
+    // Budowanie scian
+    for(int i = 0; i<n; i++)
+    {
+        for (int j = 0; j<m; j++)
+        {
+                macierz[i][1] = 7;
+                macierz[i][m-1] = 7;
+                macierz[0][j] = 7;
+                macierz[n-1][j] = 7;
+        }
+    }
+   
+    // Pozycja zerowa gracza, zastanawiam się czy nie zrobić jej losowej
+    macierz[x][y] = 2;
+   
+    // Pozycja dla bazy
+    macierz[(n-1)/2][(m-1)/2] = 3;
+   
+    // Wspolrzedne dla fortyfikacji
+    macierz[n/2][(m-1)/2] = 4;
+    macierz[n/2][m/2] = 4;
+    macierz[n/2][(m/2)-2] = 4;
+   
+    macierz[(n/2)-1][(m/2)-2] = 4;
+    macierz[(n/2)-1][m/2] = 4;
+   
+    macierz[(n/2)-2][(m-1)/2] = 4;
+    macierz[(n/2)-2][m/2] = 4;
+    macierz[(n/2)-2][(m/2)-2] = 4;
+   
+    int licznik=0;
+    int r ;
+         
+    while(start)
+    {
+        cout << "<<<<<<<<<< ATAK POKEMENOW >>>>>>>>>>>>" << endl;
+        cout << "Wcisnij ESC aby wyjsc!";
+        cout << endl;
+      //liczba wykonanych ruchów
+        licznik++;
+        cout<<"liczba ruchow: "<<licznik/2<<endl;
+        //losowanie co wybierze komouter
+ 
+        r=(( rand() % 2 ) + 0 );
+        losowanie(r);
+       
+        for(int i = 0; i<n; i++)
+        {
+            for (int j = 0; j<m; j++)
+            {
+                    if(macierz[i][j] == 7)
+                    {
+                        SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_INTENSITY );
+                        cout << "#";
+                        SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
+                    }
+                   
+                    else if(macierz[i][j] == 2)
+                    {
+                        SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_RED | FOREGROUND_INTENSITY );
+                        cout << "G";
+                        SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
+                    }
+               
+                    else if (macierz[i][j] == 3)
+                    {
+                        SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY );
+                        cout << "Q";// Tu bedzie dzialo
+                        SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
+                    }
+ 
+                    // Fortyfikacje                
+                    else if (macierz[i][j] == 4)
+                    {
+ 
+                        if(poziomUlepszen == 0)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_INTENSITY );
+                            cout << "X";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
+                        }
+                        else if(poziomUlepszen == 1)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_RED | FOREGROUND_INTENSITY );
+                            cout << "X";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                        else if(poziomUlepszen == 2)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY );
+                            cout << "X";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                        else
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY );
+                            cout << "X";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
+                            poziomUlepszen = 0; // testowo                         
+                        }
+                    }
+                   
+                    // Fortyfikacje lvl 2          
+                    else if (macierz[i][j] == 5)
+                    {
+                        cout << "X";
+                        SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
+                    }
+                   
+                    // Fortyfikacje lvl 3              
+                    else if (macierz[i][j] == 6)
+                    {
+                        SetConsoleTextAttribute( hOut, FOREGROUND_RED | FOREGROUND_INTENSITY );
+                        cout << "X";
+                        SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
+                    }
+                   
+                    else
+                    {
+                        cout << " ";
+                    }
+            }
+            cout << endl;
+        }
+        //sterowanie za pomocą strzałek+ dzwiek
+        cout << "<<<<<<<<<<<<<<<<<<<Pokemeny>>>>>>>>>>>>>>>>>";    
+        znak = getch();
+     
         switch( znak )
         {
             case 72: //strzałka w górę
-            	if(macierz[x-1][y] <1 )
-				{
-	       			macierz[x][y] = 0;
-	            	macierz[x=x-1][y] = 2;
-					Beep(400,100);					
-				}
-
+                if(macierz[x-1][y] <1 )
+                {
+                    macierz[x][y] = 0;
+                    macierz[x=x-1][y] = 2;
+                    Beep(400,100);                 
+                }
+ 
                 break;
             case 80: //strzałka w dół
-            	if(macierz[x+1][y] < 1)
-				{
-	            	macierz[x][y] = 0;
-	             	macierz[x=x+1][y] = 2;
-					 Beep(500,100);   					
-				}
-        	
+                if(macierz[x+1][y] < 1)
+                {
+                    macierz[x][y] = 0;
+                    macierz[x=x+1][y] = 2;
+                     Beep(500,100);                    
+                }
+           
                 break;
             case 75: //strzałka w lewo
-            	if(macierz[x][y-1] < 1)
-				{
-	            	macierz[x][y] = 0;
-	        		macierz[x][y=y-1] = 2;
-					Beep(440,100);					
-				}
-
+                if(macierz[x][y-1] < 1)
+                {
+                    macierz[x][y] = 0;
+                    macierz[x][y=y-1] = 2;
+                    Beep(440,100);                 
+                }
+ 
                 break;
             case 77: //strzałka w prawo
-            	if(macierz[x][y+1] < 1)
-				{
-	            	macierz[x][y] = 0;
-	         		macierz[x][y=y+1] = 2;
-					 Beep(600,100);  					
-				}
-         	
+                if(macierz[x][y+1] < 1)
+                {
+                    macierz[x][y] = 0;
+                    macierz[x][y=y+1] = 2;
+                     Beep(600,100);                    
+                }
+           
                 break;
-
-	        case 27: //ESC
-				start = 0;
-	            break;
-        }	
-      
-		
-	ClearScreen();
-	}
-	
-	cout << endl;
-	cout << endl;
-    return 0;       
+ 
+            case 27: //ESC
+                start = 0;
+                break;
+        }  
+     
+    ClearScreen();
+    }
+   
+    cout << endl;
+    cout << endl;
+    return 0;      
 }
