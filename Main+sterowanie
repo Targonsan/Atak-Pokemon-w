@@ -7,9 +7,13 @@
 #include <cstdlib>
 #include <ctime>
 using namespace std;
-static int n = 20;
-static int m = 40;
+static const int n = 20;
+static const int m = 40;
+int macierz[n][m];
 int poziomUlepszen=0;
+unsigned char znak;
+int start = 0;
+HANDLE hOut;
  
 struct Position
 {
@@ -18,67 +22,19 @@ struct Position
 };
  
 /************************************************************/
- 
-class Object
+class mapa
 {
-    Position pozycja;
+        int xmax,ymax;
     public:
-        int getX(); // wyciaganie parametrow
-        int getY();
-        void setX(int x); // ustawianie parametrow
-        void setY(int y);
+        void czyszczenie_mapy();
+        void rysowanie_mapy();
+        void zerowanie_macierzy();
+        void losowanie();
+        void budowanie_scian();
+        mapa(int a,int b); 
 };
  
-int Object::getX()
-{
-    return pozycja.x;
-}
- 
-int Object::getY()
-{
-    return pozycja.y;
-}
- 
-void Object::setX(int x)
-{
-    pozycja.x = x;
-}
- 
-void Object::setY(int y)
-{
-    pozycja.y = y;
-}
-/************************************************************/
- 
-class Pokemen : public Object
-{  
-    public:
-        Pokemen(int x, int y );
-};
- 
-class Zamek : public Object
-{
-    public:
-        Zamek(int x, int y );  
-};
- 
-Zamek::Zamek(int x, int y)
-{
-    setX(x);
-    setY(y);
-}
- 
-Pokemen::Pokemen(int x, int y)
-{
-    setX(x);
-    setY(y);
-}
- 
- 
-/************************************************************/
- 
-// Metoda do czyszczenia ekranu,
-void ClearScreen()
+void mapa::czyszczenie_mapy()
 {
   HANDLE                     hStdOut;
   CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -112,101 +68,13 @@ void ClearScreen()
     )) return;
   /* Move the cursor home */
   SetConsoleCursorPosition( hStdOut, homeCoords );
+   
 }
  
-void losowanie(int a)
+void mapa::rysowanie_mapy()
 {
-    cout<<"komputer: "<<endl;
- 
-    if(a == 0)
-    {
-        cout<<"wysłanie zolnierza"<<endl;
-    }
-    else if(a== 1)
-    {
-        cout<<"rozbudowa zamku"<<endl;
-        poziomUlepszen++;
-    }
-    else if(a== 2)
-    {
-        cout<<"ulepszenie dziala"<<endl;
-    }
-}
-/************************************************************/
- 
- 
-int main()
-{
-    srand( time( NULL ) );
-    HANDLE hOut;
     hOut = GetStdHandle( STD_OUTPUT_HANDLE );
-    int start = 1;
-   
-    int macierz[n][m];
-    unsigned char znak;
-    int x = 3;
-    int y = 3;
-   
-    //Position Punkt{x,y};
-    Pokemen gracz(x,y);
-    //cout << gracz.getX() << endl;
- 
-    // zerowanie macierzy
     for(int i = 0; i<n; i++)
-    {
-        for (int j = 0; j<m; j++)
-        {
-                macierz[i][j] = 0;
-        }
-    }
-   
-    // Budowanie scian
-    for(int i = 0; i<n; i++)
-    {
-        for (int j = 0; j<m; j++)
-        {
-                macierz[i][1] = 7;
-                macierz[i][m-1] = 7;
-                macierz[0][j] = 7;
-                macierz[n-1][j] = 7;
-        }
-    }
-   
-    // Pozycja zerowa gracza, zastanawiam się czy nie zrobić jej losowej
-    macierz[x][y] = 2;
-   
-    // Pozycja dla bazy
-    macierz[(n-1)/2][(m-1)/2] = 3;
-   
-    // Wspolrzedne dla fortyfikacji
-    macierz[n/2][(m-1)/2] = 4;
-    macierz[n/2][m/2] = 4;
-    macierz[n/2][(m/2)-2] = 4;
-   
-    macierz[(n/2)-1][(m/2)-2] = 4;
-    macierz[(n/2)-1][m/2] = 4;
-   
-    macierz[(n/2)-2][(m-1)/2] = 4;
-    macierz[(n/2)-2][m/2] = 4;
-    macierz[(n/2)-2][(m/2)-2] = 4;
-   
-    int licznik=0;
-    int r ;
-         
-    while(start)
-    {
-        cout << "<<<<<<<<<< ATAK POKEMENOW >>>>>>>>>>>>" << endl;
-        cout << "Wcisnij ESC aby wyjsc!";
-        cout << endl;
-      //liczba wykonanych ruchów
-        licznik++;
-        cout<<"liczba ruchow: "<<licznik/2<<endl;
-        //losowanie co wybierze komouter
- 
-        r=(( rand() % 2 ) + 0 );
-        losowanie(r);
-       
-        for(int i = 0; i<n; i++)
         {
             for (int j = 0; j<m; j++)
             {
@@ -258,7 +126,7 @@ int main()
                             SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY );
                             cout << "X";
                             SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
-                            poziomUlepszen = 0; // testowo                         
+                            poziomUlepszen = 0; // testowo                        
                         }
                     }
                    
@@ -284,58 +152,238 @@ int main()
             }
             cout << endl;
         }
-        //sterowanie za pomocą strzałek+ dzwiek
-        cout << "<<<<<<<<<<<<<<<<<<<Pokemeny>>>>>>>>>>>>>>>>>";    
+}
+ 
+void mapa::zerowanie_macierzy()
+{
+      // zerowanie macierzy
+    for(int i = 0; i<xmax; i++)
+    {
+        for (int j = 0; j<ymax; j++)
+        {
+                macierz[i][j] = 0;
+        }
+    }
+}
+ 
+void mapa::budowanie_scian()
+{
+      // Budowanie scian
+    for(int i = 0; i<n; i++)
+    {
+        for (int j = 0; j<m; j++)
+        {
+                macierz[i][0] = 7;
+                macierz[i][m-1] = 7;
+                macierz[0][j] = 7;
+                macierz[n-1][j] = 7;
+        }
+    }
+}
+ 
+void mapa::losowanie()
+{
+    cout<<"komputer: "<<endl;
+    int a=(( rand() % 2 ) + 0 );
+    if(a == 0)
+    {
+        cout<<"wysłanie zolnierza"<<endl;
+    }
+    else if(a== 1)
+    {
+        cout<<"rozbudowa zamku"<<endl;
+        poziomUlepszen++;
+    }
+    else if(a== 2)
+    {
+        cout<<"ulepszenie dziala"<<endl;
+    }
+}
+ 
+mapa::mapa(int a,int b)
+{
+    this->xmax=a;
+    this->ymax=b;
+   
+}
+ 
+/************************************************************/
+ 
+class Object
+{
+ 
+    public:
+        Position pozycja;
+        int getX(); // wyciaganie parametrow
+        int getY();
+        void setX(int x); // ustawianie parametrow
+        void setY(int y);
+};
+ 
+int Object::getX()
+{
+    return pozycja.x;
+}
+ 
+int Object::getY()
+{
+    return pozycja.y;
+}
+ 
+void Object::setX(int x)
+{
+    pozycja.x = x;
+}
+ 
+void Object::setY(int y)
+{
+    pozycja.y = y;
+}
+/************************************************************/
+ 
+class Pokemen : public Object
+{  
+    public:
+        Pokemen(int x, int y );
+        void rysuj(Pokemen p);
+        void ruch();
+       
+};
+ 
+Pokemen::Pokemen(int x, int y)
+{
+    setX(x);
+    setY(y);
+}
+ 
+void Pokemen::ruch()
+{    
         znak = getch();
-     
         switch( znak )
         {
             case 72: //strzałka w górę
-                if(macierz[x-1][y] <1 )
+                if(macierz[pozycja.x-1][pozycja.y] <1 )
                 {
-                    macierz[x][y] = 0;
-                    macierz[x=x-1][y] = 2;
-                    Beep(400,100);                 
+                   
+                    macierz[pozycja.x][pozycja.y] = 0;
+                    pozycja.x--;
+                    macierz[pozycja.x][pozycja.y] = 2;
+                    Beep(400,100);                
                 }
  
                 break;
             case 80: //strzałka w dół
-                if(macierz[x+1][y] < 1)
+                if(macierz[pozycja.x+1][pozycja.y] < 1)
                 {
-                    macierz[x][y] = 0;
-                    macierz[x=x+1][y] = 2;
+                    macierz[pozycja.x][pozycja.y] = 0;
+                    pozycja.x++;
+                    macierz[pozycja.x][pozycja.y] = 2;
                      Beep(500,100);                    
                 }
            
                 break;
             case 75: //strzałka w lewo
-                if(macierz[x][y-1] < 1)
+                if(macierz[pozycja.x][pozycja.y-1] < 1)
                 {
-                    macierz[x][y] = 0;
-                    macierz[x][y=y-1] = 2;
-                    Beep(440,100);                 
+                    macierz[pozycja.x][pozycja.y] = 0;
+                    pozycja.y--;
+                    macierz[pozycja.x][pozycja.y] = 2;
+                    Beep(440,100);                
                 }
  
                 break;
             case 77: //strzałka w prawo
-                if(macierz[x][y+1] < 1)
+                if(macierz[pozycja.x][pozycja.y+1] < 1)
                 {
-                    macierz[x][y] = 0;
-                    macierz[x][y=y+1] = 2;
+                    macierz[pozycja.x][pozycja.y] = 0;
+                    pozycja.y++;
+                    macierz[pozycja.x][pozycja.y] = 2;
                      Beep(600,100);                    
                 }
            
                 break;
  
             case 27: //ESC
-                start = 0;
+               
                 break;
         }  
-     
-    ClearScreen();
+}
+ 
+void Pokemen::rysuj(Pokemen p)
+{
+    macierz[p.getX()][p.getY()] = 2;
+}
+ 
+class Zamek : public Object
+{
+    public:
+        Zamek(int x, int y );  
+};
+ 
+Zamek::Zamek(int x, int y)
+{
+    setX(x);
+    setY(y);
+}
+ 
+ 
+ 
+ 
+/************************************************************/
+ 
+ 
+int main()
+{
+    srand( time( NULL ) );
+    HANDLE hOut;
+    hOut = GetStdHandle( STD_OUTPUT_HANDLE );
+    int start = 1;
+    int x = 3;
+    int y = 3;
+    int licznik=0;
+   
+    mapa narnia(n,m);  
+    narnia.zerowanie_macierzy();
+    narnia.budowanie_scian();
+   
+    Pokemen gracz(x,y);
+    gracz.rysuj(gracz);
+   
+    // Pozycja dla bazy
+    macierz[(n-1)/2][(m-1)/2] = 3;
+   
+    // Wspolrzedne dla fortyfikacji
+    macierz[n/2][(m-1)/2] = 4;
+    macierz[n/2][m/2] = 4;
+    macierz[n/2][(m/2)-2] = 4;
+   
+    macierz[(n/2)-1][(m/2)-2] = 4;
+    macierz[(n/2)-1][m/2] = 4;
+   
+    macierz[(n/2)-2][(m-1)/2] = 4;
+    macierz[(n/2)-2][m/2] = 4;
+    macierz[(n/2)-2][(m/2)-2] = 4;
+         
+    while(start)
+    {
+        cout << "<<<<<<<<<<< ATAK POKEMENOW >>>>>>>>>>>>" << endl;
+        cout << "Wcisnij ESC aby wyjsc!";
+        cout << endl;
+        liczba wykonanych ruchów
+        losowanie co wybierze komouter
+ 
+ 
+        narnia.losowanie();
+        cout<<"liczba ruchow: " << licznik << endl;
+        narnia.rysowanie_mapy();
+        gracz.ruch();
+       
+        narnia.czyszczenie_mapy();
+        licznik++;    
     }
    
     cout << endl;
     cout << endl;
     return 0;      
 }
+
