@@ -12,7 +12,7 @@ static const int m = 40;
 int macierz[n][m];
 int poziomUlepszen=0;
 unsigned char znak;
-int start = 0;
+int start = 1;
 HANDLE hOut;
  
 struct Position
@@ -29,10 +29,115 @@ class mapa
         void czyszczenie_mapy();
         void rysowanie_mapy();
         void zerowanie_macierzy();
-        void losowanie();
         void budowanie_scian();
         mapa(int a,int b); 
 };
+ 
+ 
+class komputer
+{
+    int poziom_dziala;
+    int poziomUlepszen;
+    int szansaZolniza;
+    int szansaTrafienia;
+    bool czyZolniez;
+    bool czyStrzal;
+   
+    public:
+        komputer();
+        void losowanie();
+        bool strzal();
+        void ulepszenie_dziala();
+        int wyslanie_zolnierza();
+        void zawrocZolnieza();
+        bool czyJestZolniez();
+        bool czyJestStrzal();
+        void nowyStrzal();
+       
+};
+//metody komputera
+ 
+komputer::komputer()
+{
+    this->poziom_dziala = 0;
+    this->poziomUlepszen = 0;
+    this->szansaZolniza = 0;
+    this->szansaTrafienia = 0; 
+    this->czyZolniez = false;
+    this->czyStrzal = false;
+}
+ 
+bool komputer::czyJestStrzal()
+{
+    return czyStrzal;
+}
+ 
+void komputer::nowyStrzal()
+{
+    czyStrzal = false;
+}
+ 
+bool komputer::czyJestZolniez()
+{
+    return czyZolniez;
+}
+ 
+void komputer::zawrocZolnieza()
+{
+    czyZolniez = false;
+}
+ 
+void komputer::losowanie()
+{
+    cout<<"komputer: "<<endl;
+   
+    int a=(( rand() % 4 ) + 0 );
+    if(a == 0)
+    {
+        cout<<"wysłanie zolnierza "<<endl;
+        cout<<"UWAGA: komputer ulepsza dzialo"<<endl;
+        czyZolniez = true;
+        ulepszenie_dziala();
+    }
+    else if(a == 1)
+    {
+        cout<<"rozbudowa zamku"<<endl;
+        poziomUlepszen++;
+    }
+    else if(a > 1)
+    {
+        cout<<"strzal z dziala"<<endl;
+        czyStrzal = strzal();
+    }
+ 
+}
+ 
+bool komputer::strzal()
+{
+    bool s = false;
+    for (int i = 0; i < poziomUlepszen; i++)
+    {
+        int a = (( rand() % 10 ) + 0 );
+        if (a == 8)
+        {
+            s = true;
+        }
+    }
+    return s;
+}
+ 
+ 
+void komputer::ulepszenie_dziala()
+{
+    poziom_dziala++;
+}
+ 
+int komputer::wyslanie_zolnierza()
+{
+    int a =(( rand() % 2 ) + 0 );
+    return a;
+}
+ 
  
 void mapa::czyszczenie_mapy()
 {
@@ -145,6 +250,14 @@ void mapa::rysowanie_mapy()
                         SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
                     }
                    
+                    // Fortyfikacje lvl 3              
+                    else if (macierz[i][j] == 10)
+                    {
+                        SetConsoleTextAttribute( hOut, FOREGROUND_RED | FOREGROUND_INTENSITY );
+                        cout << "B";
+                        SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
+                    }
+                   
                     else
                     {
                         cout << " ";
@@ -181,24 +294,8 @@ void mapa::budowanie_scian()
     }
 }
  
-void mapa::losowanie()
-{
-    cout<<"komputer: "<<endl;
-    int a=(( rand() % 2 ) + 0 );
-    if(a == 0)
-    {
-        cout<<"wysłanie zolnierza"<<endl;
-    }
-    else if(a== 1)
-    {
-        cout<<"rozbudowa zamku"<<endl;
-        poziomUlepszen++;
-    }
-    else if(a== 2)
-    {
-        cout<<"ulepszenie dziala"<<endl;
-    }
-}
+ 
+ 
  
 mapa::mapa(int a,int b)
 {
@@ -243,17 +340,47 @@ void Object::setY(int y)
  
 class Pokemen : public Object
 {  
+    int zycie;
+    bool czyPrzegrana;
     public:
-        Pokemen(int x, int y );
+        bool przegrana();
+        Pokemen(int x, int y);
         void rysuj(Pokemen p);
         void ruch();
+        int getZycie();
+        void zmniejszZycie();
+        bool czyJestPrzegrana();
        
 };
+ 
+bool Pokemen::czyJestPrzegrana()
+{
+    return czyPrzegrana;
+}
+ 
+bool Pokemen::przegrana()
+{
+    start = 0;
+    czyPrzegrana = true;
+    return czyPrzegrana;
+}
+ 
+int Pokemen::getZycie()
+{
+    return zycie;
+}
+ 
+void Pokemen::zmniejszZycie()
+{
+    zycie--;
+}
  
 Pokemen::Pokemen(int x, int y)
 {
     setX(x);
     setY(y);
+    this->zycie = 10;
+    this->czyPrzegrana = false;
 }
  
 void Pokemen::ruch()
@@ -261,8 +388,8 @@ void Pokemen::ruch()
         znak = getch();
         switch( znak )
         {
-            case 72: //strzałka w górę
-                if(macierz[pozycja.x-1][pozycja.y] <1 )
+            case 'w': //strzałka w górę
+                if(macierz[pozycja.x-1][pozycja.y] <1 || macierz[pozycja.x-1][pozycja.y] == 10 )
                 {
                    
                     macierz[pozycja.x][pozycja.y] = 0;
@@ -272,8 +399,8 @@ void Pokemen::ruch()
                 }
  
                 break;
-            case 80: //strzałka w dół
-                if(macierz[pozycja.x+1][pozycja.y] < 1)
+            case 's': //strzałka w dół
+                if(macierz[pozycja.x+1][pozycja.y] < 1 || macierz[pozycja.x+1][pozycja.y] == 10)
                 {
                     macierz[pozycja.x][pozycja.y] = 0;
                     pozycja.x++;
@@ -282,8 +409,8 @@ void Pokemen::ruch()
                 }
            
                 break;
-            case 75: //strzałka w lewo
-                if(macierz[pozycja.x][pozycja.y-1] < 1)
+            case 'a': //strzałka w lewo
+                if(macierz[pozycja.x][pozycja.y-1] < 1 || macierz[pozycja.x][pozycja.y-1] == 10)
                 {
                     macierz[pozycja.x][pozycja.y] = 0;
                     pozycja.y--;
@@ -292,8 +419,8 @@ void Pokemen::ruch()
                 }
  
                 break;
-            case 77: //strzałka w prawo
-                if(macierz[pozycja.x][pozycja.y+1] < 1)
+            case 'd': //strzałka w prawo
+                if(macierz[pozycja.x][pozycja.y+1] < 1 || macierz[pozycja.x][pozycja.y+1] == 10)
                 {
                     macierz[pozycja.x][pozycja.y] = 0;
                     pozycja.y++;
@@ -304,9 +431,10 @@ void Pokemen::ruch()
                 break;
  
             case 27: //ESC
-               
+                start = 0;
                 break;
         }  
+       
 }
  
 void Pokemen::rysuj(Pokemen p)
@@ -316,14 +444,41 @@ void Pokemen::rysuj(Pokemen p)
  
 class Zamek : public Object
 {
+    int licznik;
+    bool czyZwyciestwo;
+    friend class Pokemen;
     public:
-        Zamek(int x, int y );  
+        Zamek(int x, int y );
+        void Zwyciestwo(Pokemen a);
+        bool czyJestWin();
 };
  
 Zamek::Zamek(int x, int y)
 {
     setX(x);
     setY(y);
+    licznik = 0;
+    czyZwyciestwo = false;
+    macierz[getX()][getY()] = 10;
+}
+ 
+void Zamek::Zwyciestwo(Pokemen a)
+{
+    if (a.getX() == getX() && a.getY() == getY())
+    {
+        licznik++;
+        if (licznik == 3)
+        {
+            licznik = 0;
+            start = 0;
+            czyZwyciestwo = true;
+        }
+    }
+}
+ 
+bool Zamek::czyJestWin()
+{
+    return czyZwyciestwo;
 }
  
  
@@ -337,14 +492,16 @@ int main()
     srand( time( NULL ) );
     HANDLE hOut;
     hOut = GetStdHandle( STD_OUTPUT_HANDLE );
-    int start = 1;
     int x = 3;
     int y = 3;
     int licznik=0;
    
+    komputer obrona;
+   
     mapa narnia(n,m);  
     narnia.zerowanie_macierzy();
     narnia.budowanie_scian();
+    Zamek brama((n/2)-1,m/2+1);
    
     Pokemen gracz(x,y);
     gracz.rysuj(gracz);
@@ -369,21 +526,59 @@ int main()
         cout << "<<<<<<<<<<< ATAK POKEMENOW >>>>>>>>>>>>" << endl;
         cout << "Wcisnij ESC aby wyjsc!";
         cout << endl;
-        liczba wykonanych ruchów
-        losowanie co wybierze komouter
  
- 
-        narnia.losowanie();
+        obrona.losowanie();
         cout<<"liczba ruchow: " << licznik << endl;
         narnia.rysowanie_mapy();
-        gracz.ruch();
+        cout << "TWOJE PUNKTY ZYCIA: " << gracz.getZycie() << endl;
        
+        if(obrona.czyJestZolniez() == true)
+        {
+            obrona.zawrocZolnieza();           
+            if(obrona.wyslanie_zolnierza() > 0)
+            {
+                cout << obrona.wyslanie_zolnierza() << endl;
+                cout << "Zolniez nas nie zatrzymal" << endl;
+                gracz.ruch();
+            }
+            else if(obrona.wyslanie_zolnierza() == 0)
+            {
+                cout << "Blada ruchu przez Zolnieza" << endl;
+                Beep(450,2000);
+            }          
+        }
+        else
+        {
+            gracz.ruch();  
+        }
+ 
+        if (obrona.czyJestStrzal() == true )
+        {
+            obrona.nowyStrzal(); // ustawianie starzlu na falsz
+            gracz.zmniejszZycie();
+        }
+       
+        brama.Zwyciestwo(gracz);
+   
         narnia.czyszczenie_mapy();
-        licznik++;    
+        licznik++;
+        if (gracz.getZycie() == 0)
+        {
+            gracz.przegrana();
+        }
+    }
+   
+    if (gracz.czyJestPrzegrana())
+    {
+        cout << "Przegrałes" << endl;
+    }
+   
+    if (brama.czyJestWin())
+    {
+        cout << "ZWYCIESTWO! zdobyłes dzialo i zolnierza" << endl;
     }
    
     cout << endl;
     cout << endl;
     return 0;      
 }
-
