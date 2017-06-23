@@ -10,11 +10,10 @@ using namespace std;
 static const int n = 20;
 static const int m = 40;
 int macierz[n][m];
-int poziomUlepszen=0;
 unsigned char znak;
 int start = 1;
 HANDLE hOut;
- 
+ //struktura przechowywująca współrzędne
 struct Position
 {
     int x;
@@ -22,18 +21,10 @@ struct Position
 };
  
 /************************************************************/
-class mapa
-{
-        int xmax,ymax;
-    public:
-        void czyszczenie_mapy();
-        void rysowanie_mapy();
-        void zerowanie_macierzy();
-        void budowanie_scian();
-        mapa(int a,int b); 
-};
+//klasa która odpowiada za rysowanie mapy i za funkcję z nią związane
+
  
- 
+ // to co robi przeciwnik
 class komputer
 {
     int poziom_dziala;
@@ -48,6 +39,7 @@ class komputer
         void losowanie();
         bool strzal();
         void ulepszenie_dziala();
+        int getpoziom_ulepszen();
         int wyslanie_zolnierza();
         void zawrocZolnieza();
         bool czyJestZolniez();
@@ -55,8 +47,24 @@ class komputer
         void nowyStrzal();
        
 };
+
+class mapa
+{
+        int xmax,ymax;
+    public:
+        void czyszczenie_mapy();
+        void rysowanie_mapy(komputer a);
+        void zerowanie_macierzy();
+        void budowanie_scian();
+        mapa(int a,int b); 
+};
 //metody komputera
  
+int komputer::getpoziom_ulepszen()
+{
+	return poziomUlepszen;	
+}
+
 komputer::komputer()
 {
     this->poziom_dziala = 0;
@@ -66,27 +74,28 @@ komputer::komputer()
     this->czyZolniez = false;
     this->czyStrzal = false;
 }
- 
+ //sprawdzanie czy odjac zycie
 bool komputer::czyJestStrzal()
 {
     return czyStrzal;
 }
- 
+ //po strzale zmiana stanu dziala aby moglo znowu ataowac
 void komputer::nowyStrzal()
 {
     czyStrzal = false;
 }
- 
+ //sprawdzenie czy zolnierz zostal wysłany 
 bool komputer::czyJestZolniez()
 {
     return czyZolniez;
 }
- 
+ //odsyłanie z powrotem żołnierza do bazy 
 void komputer::zawrocZolnieza()
 {
     czyZolniez = false;
 }
- 
+ // tutaj komputer decyduje co zrobi po naszym ruchu
+ //największa szansa jest na strzał
 void komputer::losowanie()
 {
     cout<<"komputer: "<<endl;
@@ -111,11 +120,12 @@ void komputer::losowanie()
     }
  
 }
- 
+ //losuje czy jest strzał, jezeli jest to s=true
+ //kedy sie ulepsza dzialo to  zwieksza sie ilosc losowań 
 bool komputer::strzal()
 {
     bool s = false;
-    for (int i = 0; i < poziomUlepszen; i++)
+    for (int i = 0; i < poziom_dziala; i++)
     {
         int a = (( rand() % 10 ) + 0 );
         if (a == 8)
@@ -131,7 +141,7 @@ void komputer::ulepszenie_dziala()
 {
     poziom_dziala++;
 }
- 
+ //
 int komputer::wyslanie_zolnierza()
 {
     int a =(( rand() % 2 ) + 0 );
@@ -176,7 +186,7 @@ void mapa::czyszczenie_mapy()
    
 }
  
-void mapa::rysowanie_mapy()
+void mapa::rysowanie_mapy(komputer a)
 {
     hOut = GetStdHandle( STD_OUTPUT_HANDLE );
     for(int i = 0; i<n; i++)
@@ -208,48 +218,139 @@ void mapa::rysowanie_mapy()
                     else if (macierz[i][j] == 4)
                     {
  
-                        if(poziomUlepszen == 0)
+                        if(a.getpoziom_ulepszen() == 0)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_INTENSITY );
+                            cout << "x";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
+                        }
+                        else if(a.getpoziom_ulepszen() == 1)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_RED | FOREGROUND_INTENSITY );
+                            cout << "x";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                        else if(a.getpoziom_ulepszen() == 2)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY );
+                            cout << "x";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                         else if(a.getpoziom_ulepszen() == 3)
                         {
                             SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_INTENSITY );
                             cout << "X";
-                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
                         }
-                        else if(poziomUlepszen == 1)
+                         else if(a.getpoziom_ulepszen() == 4)
                         {
                             SetConsoleTextAttribute( hOut, FOREGROUND_RED | FOREGROUND_INTENSITY );
                             cout << "X";
                             SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
                         }
-                        else if(poziomUlepszen == 2)
+                         else if(a.getpoziom_ulepszen() == 5)
                         {
                             SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY );
                             cout << "X";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );  
+						}  
+						  else if(a.getpoziom_ulepszen() == 6)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_RED | FOREGROUND_INTENSITY );
+                            cout << "!";
                             SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
                         }
+                        else if(a.getpoziom_ulepszen() == 7)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY );
+                            cout << "!";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                         else if(a.getpoziom_ulepszen() == 8)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_INTENSITY );
+                            cout << "!";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                         else if(a.getpoziom_ulepszen() == 9)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_RED | FOREGROUND_INTENSITY );
+                            cout << "!";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                         else if(a.getpoziom_ulepszen() == 10)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY );
+                            cout << "X";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );  
+						}  
+						else if(a.getpoziom_ulepszen() == 11)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_RED | FOREGROUND_INTENSITY );
+                            cout << "E";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                        else if(a.getpoziom_ulepszen() == 12)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY );
+                            cout << "E";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                         else if(a.getpoziom_ulepszen() == 13)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_INTENSITY );
+                            cout << "E";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                         else if(a.getpoziom_ulepszen() == 14)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_RED | FOREGROUND_INTENSITY );
+                            cout << "S";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                         else if(a.getpoziom_ulepszen() == 15)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY );
+                            cout << "S";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );  
+						}  
+						  else if(a.getpoziom_ulepszen() == 16)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_RED | FOREGROUND_INTENSITY );
+                            cout << "S";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                        else if(a.getpoziom_ulepszen() == 17)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY );
+                            cout << "=";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                         else if(a.getpoziom_ulepszen() == 18)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_INTENSITY );
+                            cout << "=";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                         else if(a.getpoziom_ulepszen() == 19)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_RED | FOREGROUND_INTENSITY );
+                            cout << "=";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                          
+                        }
+                         else if(a.getpoziom_ulepszen() == 20)
+                        {
+                            SetConsoleTextAttribute( hOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY );
+                            cout << "R";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );  
+						}  
                         else
                         {
                             SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY );
-                            cout << "X";
-                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
-                            poziomUlepszen = 0; // testowo                        
+                            cout << "U";
+                            SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );                     
                         }
-                    }
-                   
-                    // Fortyfikacje lvl 2          
-                    else if (macierz[i][j] == 5)
-                    {
-                        cout << "X";
-                        SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
-                    }
-                   
-                    // Fortyfikacje lvl 3              
-                    else if (macierz[i][j] == 6)
-                    {
-                        SetConsoleTextAttribute( hOut, FOREGROUND_RED | FOREGROUND_INTENSITY );
-                        cout << "X";
-                        SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
-                    }
-                   
+					}            
                     // Fortyfikacje lvl 3              
                     else if (macierz[i][j] == 10)
                     {
@@ -257,7 +358,7 @@ void mapa::rysowanie_mapy()
                         cout << "B";
                         SetConsoleTextAttribute( hOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED );
                     }
-                   
+                    
                     else
                     {
                         cout << " ";
@@ -266,7 +367,7 @@ void mapa::rysowanie_mapy()
             cout << endl;
         }
 }
- 
+
 void mapa::zerowanie_macierzy()
 {
       // zerowanie macierzy
@@ -293,7 +394,6 @@ void mapa::budowanie_scian()
         }
     }
 }
- 
  
  
  
@@ -344,7 +444,7 @@ class Pokemen : public Object
     bool czyPrzegrana;
     public:
         bool przegrana();
-        Pokemen(int x, int y);
+        Pokemen(int x, int y, int z);
         void rysuj(Pokemen p);
         void ruch();
         int getZycie();
@@ -352,7 +452,7 @@ class Pokemen : public Object
         bool czyJestPrzegrana();
        
 };
- 
+ //sprawdzanie czy gracz przegrał 
 bool Pokemen::czyJestPrzegrana()
 {
     return czyPrzegrana;
@@ -369,17 +469,17 @@ int Pokemen::getZycie()
 {
     return zycie;
 }
- 
+ //zminiejszanie zycia po strzale
 void Pokemen::zmniejszZycie()
 {
     zycie--;
 }
  
-Pokemen::Pokemen(int x, int y)
+Pokemen::Pokemen(int x, int y, int z)
 {
     setX(x);
     setY(y);
-    this->zycie = 10;
+    this->zycie = z;
     this->czyPrzegrana = false;
 }
  
@@ -449,10 +549,16 @@ class Zamek : public Object
     friend class Pokemen;
     public:
         Zamek(int x, int y );
-        void Zwyciestwo(Pokemen a);
+        void Zwyciestwo(Pokemen a, komputer b);
         bool czyJestWin();
+        int sprawdz_poziom_ulepszen(komputer a);
 };
  
+int Zamek::sprawdz_poziom_ulepszen(komputer a)
+{
+	return a.getpoziom_ulepszen();
+}
+
 Zamek::Zamek(int x, int y)
 {
     setX(x);
@@ -462,12 +568,12 @@ Zamek::Zamek(int x, int y)
     macierz[getX()][getY()] = 10;
 }
  
-void Zamek::Zwyciestwo(Pokemen a)
+void Zamek::Zwyciestwo(Pokemen a, komputer b)
 {
     if (a.getX() == getX() && a.getY() == getY())
     {
         licznik++;
-        if (licznik == 3)
+        if (licznik == sprawdz_poziom_ulepszen(b))
         {
             licznik = 0;
             start = 0;
@@ -494,8 +600,12 @@ int main()
     hOut = GetStdHandle( STD_OUTPUT_HANDLE );
     int x = 3;
     int y = 3;
+    int z ;
     int licznik=0;
    
+	cout<<"wbierz ilosc punktow zycia"<<endl;
+	cin>>z;
+	
     komputer obrona;
    
     mapa narnia(n,m);  
@@ -503,7 +613,7 @@ int main()
     narnia.budowanie_scian();
     Zamek brama((n/2)-1,m/2+1);
    
-    Pokemen gracz(x,y);
+    Pokemen gracz(x,y,z);
     gracz.rysuj(gracz);
    
     // Pozycja dla bazy
@@ -529,9 +639,9 @@ int main()
  
         obrona.losowanie();
         cout<<"liczba ruchow: " << licznik << endl;
-        narnia.rysowanie_mapy();
+        narnia.rysowanie_mapy(obrona);
         cout << "TWOJE PUNKTY ZYCIA: " << gracz.getZycie() << endl;
-       
+        cout <<"poziom ulepszenia bazy komputera :"<<obrona.getpoziom_ulepszen();
         if(obrona.czyJestZolniez() == true)
         {
             obrona.zawrocZolnieza();           
@@ -543,8 +653,8 @@ int main()
             }
             else if(obrona.wyslanie_zolnierza() == 0)
             {
-                cout << "Blada ruchu przez Zolnieza" << endl;
-                Beep(450,2000);
+                cout <<endl<< "Blada ruchu przez Zolnieza" << endl;
+                Beep(350,1000);
             }          
         }
         else
@@ -558,7 +668,7 @@ int main()
             gracz.zmniejszZycie();
         }
        
-        brama.Zwyciestwo(gracz);
+        brama.Zwyciestwo(gracz, obrona);
    
         narnia.czyszczenie_mapy();
         licznik++;
@@ -570,12 +680,12 @@ int main()
    
     if (gracz.czyJestPrzegrana())
     {
-        cout << "Przegrałes" << endl;
+        cout << "PRZEGRALES!!! Ostani Pokemen padl"<<endl;
     }
    
     if (brama.czyJestWin())
     {
-        cout << "ZWYCIESTWO! zdobyłes dzialo i zolnierza" << endl;
+        cout << "ZWYCIESTWO!Twoja armia pokemenow zdobyla baze !!" << endl;
     }
    
     cout << endl;
