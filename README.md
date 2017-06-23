@@ -17,3 +17,7 @@ Harmonogram pracy :
 za 2 tygodnie zostanie dodana prosta logika gry tzn kiedy nasz przeciwnik będzie wybierał opcje mniej losowo,np  gdy zbliżymy się za bardzo do bazy to  bardziej będzie mu zależało na strzelaniu do nas niż rozbudowie o kolejnych poziomów murów. Zostaną dodane poziomy trudności, w tym wypadku będzie to wybór ilosci Pokemonów w naszej Armii. Po każdym strzale(celnym) ginie jeden 
 
 -do 23.06.2017 zostanie dodany mini poradnik do gry, która to wejdzie w faze testową .
+
+Sterowanie odbyw się za pomocą klawiszy "wsad"
+Najpierw wybieramy ilość pokemenów.
+Aby wygrać należy przejść na mapie do punktu "B" i stać na nim przez określoną ilość kolejek
