@@ -5,6 +5,4 @@ Po ostatnim turnieju, który niestety przegrałes byłes mocno załamany, nie wi
  +Z pewnością było to daleko od miasta, co gorsza nie miałeś przy sobie żadnych dokumentów i pokebali.
  +Po kilku chwilach widzisz jakiegoś pokemona kilka metrów od Ciebie. Po krótkiej rozmowie zwierzył Ci się, że tez został oszukany
  +Niewiele myśląc ruszacie razem w strone Miasta, po drodze dołączają się do Ciebie kolejne POkemony 
- +.
- Lock conversation
-0 comments on commit 59e12b0
+
